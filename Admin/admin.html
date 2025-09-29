@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestión de Productos - Knela</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+    <link rel="stylesheet" href="admin.css">
+</head>
+<body>
+    <header class="topbar">
+        <div class="container">
+           <img src="/Admin/knela.png" alt=""> 
+        </div>
+    </header>
+
+    <div class="container" style="padding-top:24px">
+        <div class="header-section">
+            <div class="header-top">
+                <div class="header-title">
+                    <h1>Gestión de Productos</h1>
+                    <p>Administra tu inventario de forma sencilla</p>
+                </div>
+                <button class="btn-new" onclick="openModal()">
+                    <span style="font-size:20px">+</span>
+                    Nuevo Producto
+                </button>
+            </div>
+
+            <div class="filters">
+                <div class="search-box">
+                    <span class="material-symbols-outlined">search</span>
+                    <input type="text" id="searchInput" placeholder="Buscar productos..." oninput="filterProducts()">
+                </div>
+                <select id="categoryFilter" onchange="filterProducts()">
+                    <option value="">Todas las categorías</option>
+                    <option value="dulce">Dulce</option>
+                    <option value="salado">Salado</option>
+                    <option value="bebidas">Bebidas</option>
+                    <option value="desayuno">Desayuno</option>
+                    <option value="almuerzo">Almuerzo</option>
+                    <option value="cena">Cena</option>
+                </select>
+            </div>
+        </div>
+
+        <div id="productsContainer" class="products-grid"></div>
+        <div id="emptyState" class="empty-state" style="display: none;">
+            <p>No se encontraron productos</p>
+        </div>
+    </div>
+
+    <div id="modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="modalTitle">Nuevo Producto</h2>
+                <button class="close" onclick="closeModal()">×</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label>Nombre del Producto</label>
+                    <input type="text" id="nombreInput" placeholder="Ej: Empanada de Carne">
+                </div>
+
+                <div class="form-group">
+                    <label>Categoría</label>
+                    <select id="categoriaInput">
+                        <option value="dulce">Dulce</option>
+                        <option value="salado">Salado</option>
+                        <option value="bebidas">Bebidas</option>
+                        <option value="desayuno">Desayuno</option>
+                        <option value="almuerzo">Almuerzo</option>
+                        <option value="cena">Cena</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>Precio (₲)</label>
+                    <input type="number" id="precioInput" placeholder="Ej: 3500" min="0">
+                </div>
+
+                <div class="form-group">
+                    <label>Unidades en Stock</label>
+                    <input type="number" id="unidadesInput" placeholder="Ej: 50" min="0">
+                </div>
+
+                <div class="form-group">
+                    <label>Imagen del Producto</label>
+                    <input type="file" id="imagenInput" accept="image/*" onchange="previewImage(event)">
+                    <img id="imagePreview" class="image-preview" style="display: none;">
+                </div>
+
+                <div class="modal-actions">
+                    <button class="btn-cancel" onclick="closeModal()">Cancelar</button>
+                    <button class="btn-submit" onclick="saveProduct()">Crear Producto</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <div class="container">
+            <div><b>Knela</b> © 2025 – Sistema de Gestión</div>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>
