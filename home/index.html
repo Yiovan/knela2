@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Knela — Tienda de Comida</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="./styles.css">
+</head>
+<body>
+  <!-- Header -->
+  <header class="topbar">
+    <div class="container">
+      <nav class="nav" aria-label="Principal">
+        <a class="logo" href="#">
+          <span class="logo-mark"> <img src="./img/knela logo.png" alt=""></span>
+          
+        </a>
+        <form class="search" role="search" aria-label="Buscar productos">
+          <input type="search" placeholder="Buscar panes, postres, cafés…" aria-label="Buscar" />
+        </form>
+        <div class="actions">
+
+          <a class="btn" href="#">🛒 Carrito (0)</a>
+        </div>
+      </nav>
+
+      <!-- Hero -->
+      <section class="hero">
+        <article class="hero-card">
+          <div>
+            <h1>Panadería & deli con sabor <span style="color:var(--brand)">artesanal</span></h1>
+            <p>Ingredientes frescos, recetas caseras y envíos el mismo día. Descubrí tus favoritos y recibí en casa.</p>
+            <div class="cta">
+              <a class="btn btn-brand" href="#productos">Ver productos</a>
+              <a class="btn btn-outline" href="#ofertas">Ofertas de hoy</a>
+            </div>
+          </div>
+          <div class="hero-visual">
+            <img src="https://images.unsplash.com/photo-1549931319-a545dcf3bc73?q=80&w=1200&auto=format&fit=crop" alt="Mesa con panes y café" loading="lazy">
+          </div>
+        </article>
+        <aside class="side-banner">
+          <span class="tag">🚚 Envío gratis</span>
+          <h3>En pedidos desde Gs. 120.000</h3>
+          <p>Asunción y Gran Asunción. Entrega en 2–4 horas.</p>
+          <a class="btn" href="#">Ver condiciones</a>
+        </aside>
+      </section>
+    </div>
+  </header>
+
+  <main class="container" id="productos">
+    <!-- Categories -->
+    <section class="section" aria-labelledby="cats-title">
+      <h2 id="cats-title">Categorías</h2>
+      <div class="cats">
+        <a class="cat" href="./Productos/panaderia.html">
+          <span class="icon">🥐</span>
+          <div>
+            <div>Panadería</div>
+            <small>20 productos</small>
+          </div>
+        </a>
+        <a class="cat" href="#">
+          <span class="icon">🍰</span>
+          <div>
+            <div>Pastelería</div>
+            <small>18 productos</small>
+          </div>
+        </a>
+        <a class="cat" href="#">
+          <span class="icon">☕</span>
+          <div>
+            <div>Café & Bebidas</div>
+            <small>12 productos</small>
+          </div>
+        </a>
+        <a class="cat" href="#">
+          <span class="icon">🥗</span>
+          <div>
+            <div>Saludable</div>
+            <small>9 productos</small>
+          </div>
+        </a>
+        <a class="cat" href="#">
+          <span class="icon">🧀</span>
+          <div>
+            <div>Sandwiches</div>
+            <small>11 productos</small>
+          </div>
+        </a>
+        <a class="cat" href="#">
+          <span class="icon">🎁</span>
+          <div>
+            <div>Combos</div>
+            <small>6 productos</small>
+          </div>
+        </a>
+      </div>
+    </section>
+
+    <!-- Toolbar -->
+    <div class="toolbar">
+      <div class="filters">
+        <button class="chip">Todos</button>
+        <button class="chip">Más vendidos</button>
+        <button class="chip">Nuevos</button>
+        <button class="chip">Oferta</button>
+        <button class="chip">Sin gluten</button>
+      </div>
+      <div>
+        <button class="chip">Ordenar ▾</button>
+      </div>
+    </div>
+
+    <!-- Products Grid -->
+    <section class="grid" aria-label="Listado de productos">
+
+        <!-- Formato de pago 0 -->
+
+
+        <div id="comprar" class="modal">
+          <div class="modal-content">
+              <a href="#" class="close">&times;</a>
+                    <h2>Confirmar compra</h2>
+                      <p>¿Querés agregar este producto al carrito?</p>
+    <div class="modal-actions">
+      <a href="#" class="btn-sm buy">Sí</a>
+      <a href="#" class="btn-sm">Cancelar</a>
+    </div>
+  </div>
+</div>
+      <!-- Card 1 -->
+      <article class="card">
+        <div class="thumb">
+          <span class="badge">-20%</span>
+          <img src="./img/medialunas.png" alt="Medialunas doradas" loading="lazy" />
+        </div>
+        <div class="content">
+          <div class="title">Medialunas (6u)</div>
+          <div class="rate">★ 4.8 • 230 reseñas</div>
+          <div class="price"><b>Gs. 12.000</b> <s>Gs. 15.000</s></div>
+          <div class="actions-row">
+            <a href="#" class="btn-sm">Detalles</a>
+            <a href="#comprar" class="btn-sm buy">Comprar</a>
+          </div>
+        </div>
+      </article>
+      <!-- Card 2 -->
+      <article class="card">
+        <div class="thumb">
+          <img src="./img/torta de chocolate.png" alt="Torta de chocolate con frutos rojos" loading="lazy" />
+        </div>
+        <div class="content">
+          <div class="title">Torta de chocolate</div>
+          <div class="rate">★ 4.9 • 180 reseñas</div>
+          <div class="price"><b>Gs. 55.000</b></div>
+          <div class="actions-row">
+            <a href="#" class="btn-sm">Detalles</a>
+            <a href="#comprar" class="btn-sm buy">Comprar</a>
+          </div>
+        </div>
+      </article>
+      <!-- Card 3 -->
+      <article class="card">
+        <div class="thumb">
+          <img src="https://images.unsplash.com/photo-1504754524776-8f4f37790ca0?q=80&w=1000&auto=format&fit=crop" alt="Café latte con arte" loading="lazy" />
+        </div>
+        <div class="content">
+          <div class="title">Café Latte 12oz</div>
+          <div class="rate">★ 4.7 • 520 reseñas</div>
+          <div class="price"><b>Gs. 10.000</b></div>
+          <div class="actions-row">
+            <a href="#" class="btn-sm">Detalles</a>
+            <a href="#comprar" class="btn-sm buy">Comprar</a>
+          </div>
+        </div>
+      </article>
+      <!-- Card 4 -->
+      <article class="card">
+        <div class="thumb">
+          <span class="badge">Nuevo</span>
+          <img src="./img/ciabatta.png" alt="Sándwich gourmet" loading="lazy" />
+        </div>
+        <div class="content">
+          <div class="title">Sándwich Ciabatta</div>
+          <div class="rate">★ 4.6 • 98 reseñas</div>
+          <div class="price"><b>Gs. 24.000</b></div>
+          <div class="actions-row">
+            <a href="#" class="btn-sm">Detalles</a>
+            <a href="#" class="btn-sm buy">Agregar</a>
+          </div>
+        </div>
+      </article>
+      <!-- Card 5 -->
+      <article class="card">
+        <div class="thumb">
+          <img src="./img/image.png" alt="Ensalada fresca" loading="lazy" />
+        </div>
+        <div class="content">
+          <div class="title">Ensalada Quinoa</div>
+          <div class="rate">★ 4.5 • 64 reseñas</div>
+          <div class="price"><b>Gs. 28.000</b></div>
+          <div class="actions-row">
+            <a href="#" class="btn-sm">Detalles</a>
+            <a href="#" class="btn-sm buy">Agregar</a>
+          </div>
+        </div>
+      </article>
+      <!-- Card 6 -->
+      <article class="card">
+        <div class="thumb">
+          <img src="https://images.unsplash.com/photo-1513104890138-7c749659a591?q=80&w=1000&auto=format&fit=crop" alt="Pizza margarita" loading="lazy" />
+        </div>
+        <div class="content">
+          <div class="title">Pizza Margarita</div>
+          <div class="rate">★ 4.4 • 72 reseñas</div>
+          <div class="price"><b>Gs. 45.000</b></div>
+          <div class="actions-row">
+            <a href="#" class="btn-sm">Detalles</a>
+            <a href="#" class="btn-sm buy">Agregar</a>
+          </div>
+        </div>
+      </article>
+      <!-- Card 7 -->
+      <article class="card">
+        <div class="thumb">
+          <img src="https://images.unsplash.com/photo-1499028344343-cd173ffc68a9?q=80&w=1000&auto=format&fit=crop" alt="Cupcakes variados" loading="lazy" />
+        </div>
+        <div class="content">
+          <div class="title">Cupcakes (4u)</div>
+          <div class="rate">★ 4.9 • 312 reseñas</div>
+          <div class="price"><b>Gs. 20.000</b></div>
+          <div class="actions-row">
+            <a href="#" class="btn-sm">Detalles</a>
+            <a href="#" class="btn-sm buy">Agregar</a>
+          </div>
+        </div>
+      </article>
+      <!-- Card 8 -->
+      <article class="card">
+        <div class="thumb">
+          <img src="https://images.unsplash.com/photo-1541167760496-1628856ab772?q=80&w=1000&auto=format&fit=crop" alt="Cookies de chispas" loading="lazy" />
+        </div>
+        <div class="content">
+          <div class="title">Cookies (8u)</div>
+          <div class="rate">★ 4.7 • 201 reseñas</div>
+          <div class="price"><b>Gs. 18.000</b></div>
+          <div class="actions-row">
+            <a href="#" class="btn-sm">Detalles</a>
+            <a href="#" class="btn-sm buy">Agregar</a>
+          </div>
+        </div>
+      </article>
+    </section>
+
+    <!-- Info bar -->
+    <section id="ofertas" class="section" aria-label="Beneficios">
+      <div class="cats" style="grid-template-columns:repeat(3,1fr)">
+        <div class="cat">
+          <div class="icon">⏱️</div>
+          <div>
+            <div>Listo en minutos</div>
+            <small>Preparación al momento</small>
+          </div>
+        </div>
+        <div class="cat">
+          <div class="icon">💳</div>
+          <div>
+            <div>Pagá como quieras</div>
+            <small>Tarjeta, efectivo o giro</small>
+          </div>
+        </div>
+        <div class="cat">
+          <div class="icon">🛡️</div>
+          <div>
+            <div>Compra segura</div>
+            <small>Protección al comprador</small>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="container" style="display:grid;gap:8px">
+      <div><b>Knela</b> © 2025 — Yioh</div>
+    </div>
+  </footer>
+</body>
+</html>

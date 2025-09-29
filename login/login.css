@@ -1,0 +1,92 @@
+@import url('https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100..900;1,100..900&display=swap');
+        :root {
+            /* Define main colors for easier maintenance */
+            --primary-color: #9b7e49;
+            --secondary-color: #8f94fb; /* A lighter shade for a gradient */
+            --text-color: #333;
+            --background-gradient: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            height: 100vh;
+            /* Using a modern CSS gradient as a clean background */
+            background: var(--background-gradient);
+            /* Fallback to original background image if needed, but the gradient is a modern choice */
+            /* background: url('fondo.png') no-repeat center center fixed; */
+            /* background-size: cover; */
+                background-image: url('fondo.png'); 
+
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            /* Using the imported Roboto font */
+            font-family: 'Roboto', sans-serif; 
+            color: var(--text-color);
+        }
+        
+        .login-container {
+            /* Glassmorphism/Frosted Effect */
+            background: rgba(255, 255, 255, 0.15); /* More transparent white */
+            backdrop-filter: blur(10px); /* Frosted glass effect */
+            -webkit-backdrop-filter: blur(10px); /* For Safari support */
+            
+            padding: 40px 30px;
+            border-radius: 20px; /* More rounded corners */
+            /* A softer, more modern box shadow */
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2); 
+            border: 1px solid rgba(255, 255, 255, 0.3); /* Light border for the frosted look */
+            
+            width: 320px;
+            text-align: center;
+        }
+        
+        .login-container h2 {
+            margin-bottom: 30px;
+            color: #2e2d2d; /* White title to stand out on the frosted background */
+            font-weight: 500;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+        
+        .login-container input {
+            width: calc(100% - 20px); /* Adjust width for padding */
+            padding: 12px 10px;
+            margin: 10px 0 20px 0;
+            border: 2px solid #ddd; /* Slightly thicker, cleaner border */
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border-color 0.3s, box-shadow 0.3s;
+            outline: none; /* Remove default focus outline */
+        }
+        
+        /* Input Focus Style for modern accessibility */
+        .login-container input:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 8px rgba(78, 84, 200, 0.4);
+        }
+        
+        .login-container button {
+            width: 100%;
+            padding: 12px;
+            background: var(--primary-color);
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            font-size: 18px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background 0.3s, transform 0.1s; /* Added transform for a subtle click effect */
+            letter-spacing: 0.5px;
+        }
+        
+        .login-container button:hover {
+            background: var(--secondary-color); /* Use the lighter secondary color on hover */
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .login-container button:active {
+            transform: scale(0.99); /* Subtle press down effect */
+        }
+    
