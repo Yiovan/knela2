@@ -4,15 +4,14 @@ const cors = require('cors');
 const bodyParser = require('body-parser');
 
 const app = express();
-// Aumentamos el límite de JSON para permitir el envío de imágenes grandes en Base64
 app.use(bodyParser.json({ limit: '50mb' })); 
 app.use(cors());
 
-// Configuración SQL Server (Usando knela/knela2025*)
+// Configuración SQL Server
 const config = {
     user: 'knela',
     password: 'knela2025*', 
-    server: 'YIO', // Asegúrate de que 'YIO' o 'localhost' sea correcto
+    server: 'YIO',
     database: 'knela',
     options: {
         encrypt: false, 
@@ -20,34 +19,146 @@ const config = {
     }
 };
 
-// 🔹 1. OBTENER TODOS LOS PRODUCTOS (GET /api/productos)
-// server.js
+// ========================================
+// RUTAS DE AUTENTICACIÓN
+// ========================================
 
-// ... (todo el código anterior)
+// 🔹 REGISTRO DE USUARIO
+app.post('/api/auth/registro', async (req, res) => {
+    const { usuario, email, password } = req.body;
+    
+    // Validaciones básicas
+    if (!usuario || !email || !password) {
+        return res.status(400).json({ 
+            success: false, 
+            message: 'Todos los campos son requeridos' 
+        });
+    }
 
-// Obtener productos (RUTA MODIFICADA PARA CONVERTIR IMAGEN A BASE64)
+    if (password.length < 6) {
+        return res.status(400).json({ 
+            success: false, 
+            message: 'La contraseña debe tener al menos 6 caracteres' 
+        });
+    }
+
+    try {
+        let pool = await sql.connect(config);
+        
+        // Verificar si el usuario ya existe
+        let checkUser = await pool.request()
+            .input('usuario', sql.VarChar, usuario)
+            .input('email', sql.VarChar, email)
+            .query("SELECT * FROM usuarios WHERE usuario=@usuario OR email=@email");
+
+        if (checkUser.recordset.length > 0) {
+            return res.status(400).json({ 
+                success: false, 
+                message: 'El usuario o email ya existe' 
+            });
+        }
+
+        // Insertar nuevo usuario
+        await pool.request()
+            .input('usuario', sql.VarChar, usuario)
+            .input('email', sql.VarChar, email)
+            .input('password', sql.VarChar, password)
+            .query("INSERT INTO usuarios (usuario, email, password) VALUES (@usuario, @email, @password)");
+
+        res.json({ 
+            success: true, 
+            message: 'Usuario registrado exitosamente' 
+        });
+
+    } catch (err) {
+        console.error("Error en registro:", err.message);
+        res.status(500).json({ 
+            success: false, 
+            message: "Error al registrar usuario: " + err.message 
+        });
+    }
+});
+
+// 🔹 LOGIN DE USUARIO
+app.post('/api/auth/login', async (req, res) => {
+    const { usuario, password } = req.body;
+
+    if (!usuario || !password) {
+        return res.status(400).json({ 
+            success: false, 
+            message: 'Usuario y contraseña son requeridos' 
+        });
+    }
+
+    try {
+        let pool = await sql.connect(config);
+        
+        // Buscar usuario (puede ser por usuario o email)
+        let result = await pool.request()
+            .input('usuario', sql.VarChar, usuario)
+            .query("SELECT * FROM usuarios WHERE (usuario=@usuario OR email=@usuario) AND activo=1");
+
+        if (result.recordset.length === 0) {
+            return res.status(401).json({ 
+                success: false, 
+                message: 'Usuario no encontrado' 
+            });
+        }
+
+        const user = result.recordset[0];
+
+        // Verificar contraseña
+        if (user.password !== password) {
+            return res.status(401).json({ 
+                success: false, 
+                message: 'Contraseña incorrecta' 
+            });
+        }
+
+        // Login exitoso
+        res.json({ 
+            success: true, 
+            message: 'Login exitoso',
+            usuario: {
+                id: user.id,
+                usuario: user.usuario,
+                email: user.email
+            }
+        });
+
+    } catch (err) {
+        console.error("Error en login:", err.message);
+        res.status(500).json({ 
+            success: false, 
+            message: "Error al iniciar sesión: " + err.message 
+        });
+    }
+});
+
+// ========================================
+// RUTAS DE PRODUCTOS (EXISTENTES)
+// ========================================
+
+// 🔹 OBTENER TODOS LOS PRODUCTOS
 app.get('/api/productos', async (req, res) => {
     try {
         let pool = await sql.connect(config);
         let result = await pool.request().query("SELECT * FROM producto");
         
-        // 🔹 Conversión clave: transforma el Buffer a cadena Base64 para el frontend
         const productosConImagenes = result.recordset.map(producto => {
             let imagenBase64 = null;
             
-            // Verifica si existe la imagen y si es un Buffer de datos
             if (producto.imagen && producto.imagen.length > 0) {
-                // Aquí asumes que la imagen es JPEG/PNG y creas el prefijo
                 imagenBase64 = `data:image/jpeg;base64,${producto.imagen.toString('base64')}`;
             }
 
             return {
                 ...producto,
-                imagen: imagenBase64 // Sobrescribe el campo 'imagen' con el Base64
+                imagen: imagenBase64
             };
         });
 
-        res.json(productosConImagenes); // Envía el array con las imágenes corregidas
+        res.json(productosConImagenes);
 
     } catch (err) {
         console.error("Error en GET /api/productos:", err.message);
@@ -55,9 +166,7 @@ app.get('/api/productos', async (req, res) => {
     }
 });
 
-// ... (resto de las rutas POST, PUT, DELETE)
-
-// 🔹 2. CREAR NUEVO PRODUCTO (POST /api/productos)
+// 🔹 CREAR NUEVO PRODUCTO
 app.post('/api/productos', async (req, res) => {
     const { nombre, categoria, precio, unidades, imagen } = req.body;
     try {
@@ -67,7 +176,6 @@ app.post('/api/productos', async (req, res) => {
             .input('categoria', sql.VarChar, categoria)
             .input('precio', sql.Int, precio)
             .input('unidades', sql.Int, unidades)
-            // Convierte la imagen Base64 a Buffer VarBinary para SQL
             .input('imagen', sql.VarBinary, imagen ? Buffer.from(imagen.split(',')[1], 'base64') : null)
             .query("INSERT INTO producto (nombre, categoria, precio, unidades, imagen) VALUES (@nombre, @categoria, @precio, @unidades, @imagen)");
         res.send("Producto agregado");
@@ -77,14 +185,13 @@ app.post('/api/productos', async (req, res) => {
     }
 });
 
-// 🔹 3. ACTUALIZAR PRODUCTO (PUT /api/productos/:id)
+// 🔹 ACTUALIZAR PRODUCTO
 app.put('/api/productos/:id', async (req, res) => {
     const { id } = req.params;
     const { nombre, categoria, precio, unidades, imagen } = req.body;
     try {
         let pool = await sql.connect(config);
         
-        // El query mantiene la imagen existente si 'imagen' es nula o la actualiza si se envía Base64.
         let query = `UPDATE producto SET 
                         nombre=@nombre, 
                         categoria=@categoria, 
@@ -100,7 +207,6 @@ app.put('/api/productos/:id', async (req, res) => {
             .input('precio', sql.Int, precio)
             .input('unidades', sql.Int, unidades);
             
-        // Solo agrega el parámetro @imagen si se envió una nueva imagen
         if (imagen) {
             request = request.input('imagen', sql.VarBinary, Buffer.from(imagen.split(',')[1], 'base64'));
         }
@@ -114,8 +220,7 @@ app.put('/api/productos/:id', async (req, res) => {
     }
 });
 
-
-// 🔹 4. ELIMINAR PRODUCTO (DELETE /api/productos/:id)
+// 🔹 ELIMINAR PRODUCTO
 app.delete('/api/productos/:id', async (req, res) => {
     const { id } = req.params;
     try {
