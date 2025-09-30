@@ -1,0 +1,24 @@
+﻿function actualizarColoresTituloElementos() {
+    const coloresModoClaro = ["#FFA07A", "#F49BAB", "#7ED6DF", "#A29BFE", "#FF6B81", "#FDCB6E", "#70A1FF", "#E77F67", "#55EFC4", "#D980FA", "#FAB1A0", "#1ABC9C"];
+    const coloresModoOscuro = ["#FF7F50", "#D36D8F", "#5DA9B3", "#786FA6", "#C44569", "#D6A34C", "#487EB0", "#C56B47", "#2ED8B1", "#A55EEA", "#D98880", "#11977B"];
+
+    const isDarkMode = document.body.classList.contains('dark-mode');
+    const coloresActivos = isDarkMode ? coloresModoClaro : coloresModoOscuro;
+    const coloresAlternativos = isDarkMode ? coloresModoOscuro : coloresModoClaro;
+
+    document.querySelectorAll(".titulo.elemento").forEach(card => {
+        const colorActualRGB = getComputedStyle(card).backgroundColor;
+        const colorActualHex = rgbToHex(colorActualRGB);
+        const colorIndex = coloresActivos.indexOf(colorActualHex.toUpperCase());
+
+        if (colorIndex !== -1) {
+            card.style.backgroundColor = coloresAlternativos[colorIndex];
+        }
+    });
+
+    function rgbToHex(rgb) {
+        const result = rgb.match(/\d+/g);
+        if (!result || result.length < 3) return rgb;
+        return `#${((1 << 24) + (+result[0] << 16) + (+result[1] << 8) + +result[2]).toString(16).slice(1).toUpperCase()}`;
+    }
+}

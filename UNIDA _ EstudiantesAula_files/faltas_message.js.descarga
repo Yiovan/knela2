@@ -1,0 +1,9 @@
+﻿fetch(`../Alumno/Faltas`, {
+    method: 'GET',
+}).then((response) => {
+    return response.text();
+}).then((result) => {
+    let body = document.getElementById('avisos_message');
+    body.innerHTML = result;
+}).catch(error => console.error('Error:', error))
+

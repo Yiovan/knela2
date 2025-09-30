@@ -1,0 +1,77 @@
+﻿var mes = new Date().getMonth() + 1;
+
+switch (mes) {
+    case 1:
+        color = '#730E1B';
+        break;
+    case 2:
+        color = '#A569BD';
+        break;
+    case 3:
+        color = '#28B463';
+        break;
+    case 4:
+        color = '#2E86C1';
+        break;
+    case 5:
+        color = '#E67E22';
+        break;
+    case 6:
+        color = '#88C353';
+        break;
+    case 7:
+        color = '#5078D4';
+        break;
+    case 8:
+        color = '#B00165';
+        break;
+    case 9:
+        color = '#FA8072';
+        break;
+    case 10:
+        color = '#3F152D';
+        break;
+    case 11:
+        color = '#4169E1';
+        break;
+    case 12:
+        color = '#F15107';
+        break;
+    default:
+        color = '#029584'
+        break;
+}
+
+// Genera el objeto qrcodez
+var qrcode = new QRCode(document.getElementById("qrcodeServicios"), {
+    width: 200,
+    height: 200,
+    colorDark: color,
+});
+
+// Funcion para crear el codigo
+function makeCodeS() {
+    var elText3 = document.getElementById("textS");
+
+    if (!elText3.value) {
+        alert("Ingresa un texto");
+        elText3.focus();
+        return;
+    }
+
+    qrcode.makeCode(elText3.value);
+}
+
+// Al cargar crear el qr inicial
+makeCodeS();
+
+// Al pulsar teclar Enter, genera en QR
+$("#textS").
+    on("blur", function () {
+        makeCodeS();
+    }).
+    on("keydown", function (e) {
+        if (e.keyCode == 13) {
+            makeCodeS();
+        }
+    });

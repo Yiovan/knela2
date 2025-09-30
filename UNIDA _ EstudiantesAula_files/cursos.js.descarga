@@ -1,0 +1,32 @@
+﻿let alturas = document.getElementsByClassName('calcular-altura');
+let mayor = alturas[0].offsetHeight;
+for (let i = 0; i < alturas.length; i++) {
+    if (alturas[i].offsetHeight > mayor) {
+        mayor = alturas[i].offsetHeight;
+     //    console.log('entro');
+    }
+}
+cambiarAltura(mayor);
+function cambiarAltura(mayor) {
+    for (let i = 0; i < alturas.length; i++) {
+        alturas[i].style.minHeight = mayor + 'px';
+    }
+}
+// console.log('El mayor es', mayor);
+
+setTimeout(() => {
+    let alturas = document.getElementsByClassName('calcular-altura');
+    let mayor = alturas[0].offsetHeight;
+    for (let i = 0; i < alturas.length; i++) {
+        if (alturas[i].offsetHeight > mayor) {
+            mayor = alturas[i].offsetHeight;
+        //    console.log('entro');
+        }
+    }
+    cambiarAltura(mayor);
+    function cambiarAltura(mayor) {
+        for (let i = 0; i < alturas.length; i++) {
+            alturas[i].style.minHeight = mayor + 'px';
+        }
+    }
+}, 1000)

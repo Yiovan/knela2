@@ -1,0 +1,126 @@
+window.onload = function () {
+    let animacionEjecutada = sessionStorage.getItem('animacionEjecutada');
+    var buttonAvisos = document.getElementById("buttonAvisos");
+    /*var notificacionCirculo = document.getElementById("notificacionCirculo");*/
+
+    if (animacionEjecutada) {
+        /*buttonAvisos.style.animation = "none";*/ // Detener la animación si ya se ejecutó
+        /*notificacionCirculo.style.display = "none";*/
+    }
+}
+function avisos(event) {
+    event.preventDefault();
+
+    var bgAvisos = document.getElementById("bgAvisos");
+    var buttonAvisos = document.getElementById("buttonAvisos");
+    var avisosContent = document.getElementById("avisosContent");
+    /*var notificacionCirculo = document.getElementById("notificacionCirculo");*/
+
+    bgAvisos.style.right = "-236px";
+    bgAvisos.classList.add("bg-avisos-active");
+    /*buttonAvisos.style.display = "none";*/
+
+
+    sessionStorage.setItem('animacionEjecutada', true);
+
+    let animacionEjecutada = sessionStorage.getItem('animacionEjecutada');
+
+    if (animacionEjecutada) {
+        /*buttonAvisos.style.animation = "none";*/
+        /*notificacionCirculo.style.display = "none";*/
+    }
+
+    fetch('/jaguarete/Alumno/Avisos')
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return response.json();
+        })
+        .then(data => {
+            
+            avisosContent.innerHTML = "";
+            if (data.length === 0) {
+                let msgDiv = document.createElement('div');
+                msgDiv.className = 'msg';
+                msgDiv.textContent = "No hay notificaciones";
+                avisosContent.appendChild(msgDiv);
+            } else {
+
+                data.forEach(aviso => {
+                    let msgDiv = document.createElement('div');
+                    msgDiv.className = 'msg';
+
+                    let span = document.createElement('span');
+
+                    if (aviso.tipoAviso == "DE-E") {
+                        span.innerHTML = "<strong>Decano:</strong> " + aviso.daviso;
+                    } else if (aviso.tipoAviso == "C-E") {
+                        span.innerHTML = "<strong>Coordinador:</strong> " + aviso.daviso;
+                    } else if (aviso.tipoAviso == "D-E") {
+                        span.innerHTML = "<strong>"+aviso.dpersona+":</strong> " + aviso.daviso;
+                    }
+                    msgDiv.appendChild(span);
+
+                    if ( aviso.imagen != null) {
+
+                        let button = document.createElement('button');
+                        button.className = "btn-mostrar"
+                        button.textContent = "Ver Imagen";
+                        button.addEventListener('click', () => {
+                            mostrarImagen(event, aviso.imagen);
+                        });
+
+                        msgDiv.appendChild(button);
+                    }
+                    avisosContent.appendChild(msgDiv);
+                });
+            }
+        })
+        .catch(error => {
+            console.error('Error fetching avisos:', error);
+        });
+}
+
+function closeAvisos(event) {
+    event.preventDefault();
+
+    var bgAvisos = document.getElementById("bgAvisos");
+    var buttonAvisos = document.getElementById("buttonAvisos");
+
+    bgAvisos.classList.remove("bg-avisos-active");
+    bgAvisos.style.right = "-2000px";
+    buttonAvisos.style.display = "flex";
+}
+
+
+function mostrarImagen(event, imagen) {
+    event.preventDefault();
+    var popUp = document.getElementById("popUp");
+    var header = document.getElementById("header");
+    var navBar = document.getElementById("nav-bar");
+
+    header.style.zIndex = 0;
+    navBar.style.zIndex = 0;
+
+    var img = document.getElementById("img");
+    img.src = `data:image/png;base64,${imagen}`;
+
+    setTimeout(() => {
+        popUp.style.display = 'flex';
+    }, "1000");
+    
+}
+
+function closeImg(event) {
+    event.preventDefault();
+
+    var popUp = document.getElementById("popUp");
+    var header = document.getElementById("header");
+    var navBar = document.getElementById("nav-bar");
+
+    header.style.zIndex = null;
+    navBar.style.zIndex = null;
+
+    popUp.style.display = 'none';
+}

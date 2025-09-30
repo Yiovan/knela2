@@ -1,0 +1,201 @@
+@font-face {
+    font-family: 'nasalization';
+    src: url('../Fonts/nasalization-rg.ttf') format('truetype');
+    font-style: normal;
+    font-weight: normal;
+}
+
+.fila-login {
+    height: 100vh;
+}
+
+.nasa-font {
+    font-family: nasalization !important;
+}
+
+.izquierda {
+    background-color: #3498DB;
+}
+
+.custom-blue {
+    background-color: #3498DB;
+}
+
+.contenedor-imagen {
+    position: relative;
+    text-align: center;
+}
+
+.texto-encima-centrado {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+.titulo-principal {
+    font-family: Helvetica;
+    font-size: 40px;
+    font-weight: 700;
+    line-height: 48px;
+}
+
+.titulo-segundario {
+    font-size: 28px;
+    font-family: Helvetica;
+}
+
+.img-jaguarete {
+    max-width: 50em;
+    max-height: 50em;
+    opacity: 0.1;
+}
+
+#responsive-navbar {
+    display: none;
+}
+
+@media screen and (max-width: 1199px) {
+    .izquierda {
+        display: none !important;
+    }
+
+    #login-card {
+        margin: auto !important;
+        max-width: 50%;
+        margin-top: 3em !important;
+    }
+
+    .fila-login {
+        background-color: #3498DB;
+    }
+
+    #navbar-responsive {
+        display: contents !important;
+    }
+}
+
+@media screen and (max-width: 767px) {
+    .izquierda {
+        display: none !important;
+    }
+
+    #login-card {
+        margin: auto !important;
+        max-width: 90%;
+        margin-top: 3em !important;
+    }
+
+    .fila-login {
+        background-color: #3498DB;
+    }
+
+    #navbar-responsive {
+        display: contents !important;
+    }
+}
+
+.card.card-body {
+    border-radius: 1rem;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+    padding: 2rem;
+    background-color: #ffffff;
+}
+
+    .card.card-body h4 {
+        font-weight: 600;
+        margin-bottom: 1.5rem;
+        font-size: 1.3rem;
+        font-family: 'Helvetica', sans-serif;
+    }
+
+
+.form-control {
+    border-radius: 0.6rem;
+    padding: 0.75rem 1rem;
+    border: 1px solid #ccc;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease, transform 0.2s ease;
+    font-size: 0.95rem;
+}
+
+    .form-control:hover {
+        border-color: #2980b9;
+        box-shadow: 0 0 8px rgba(41, 128, 185, 0.4);
+        transform: scale(1.02);
+    }
+
+    .form-control:focus {
+        border-color: #3498DB;
+        box-shadow: 0 0 12px rgba(52, 152, 219, 0.7);
+        outline: none;
+        transform: scale(1.03);
+    }
+
+label {
+    font-weight: 500;
+    font-size: 0.9rem;
+    margin-bottom: 0.3rem;
+    color: #333;
+}
+
+button.btn.custom-blue {
+    background-color: #3498DB;
+    transition: background-color 0.3s ease;
+    font-weight: 600;
+    border-radius: 2rem;
+    padding: 0.6rem;
+    font-size: 1rem;
+}
+
+    button.btn.custom-blue:hover {
+        background-color: #2980B9;
+    }
+
+#togglePassword {
+    color: #aaa;
+    transition: color 0.3s ease;
+}
+
+    #togglePassword:hover {
+        color: #3498DB;
+    }
+
+.text-danger {
+    font-size: 0.9rem;
+    margin-top: 0.5rem;
+    display: block;
+}
+
+
+select.form-control {
+    padding: 0.5rem 2.5rem 0.5rem 1rem;
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    background-color: #fff;
+    background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='10'%3E%3Cpolygon fill='%233498DB' points='7,10 0,0 14,0'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 1rem center;
+    background-size: 0.8rem;
+    border-radius: 0.6rem;
+    border: 1px solid #ccc;
+    transition: all 0.3s ease;
+    font-size: 0.95rem;
+}
+
+.recaptcha-container {
+    display: flex;
+    justify-content: center;
+    width: 100%;
+}
+
+.g-recaptcha {
+    transform: scale(0.85);
+    transform-origin: center;
+}
+
+@media (max-width: 400px) {
+    .g-recaptcha {
+        transform: scale(0.75);
+    }
+}

@@ -1,0 +1,125 @@
+document.addEventListener("DOMContentLoaded", function () {
+    const toggleButton = document.getElementById("header-toggle");
+    const sidebar = document.getElementById("nav-bar");
+    const bodypd = document.getElementById("body-pd");
+    const headerpd = document.getElementById("header");
+    const infoText = document.getElementById("info-text");
+    const barraLateral = document.getElementById("barra_lateral");
+    const nav_name = document.querySelectorAll(".nav_name");
+    const isMobile = () => window.innerWidth <= 768;
+
+    const linkColor = document.querySelectorAll(".nav_link");
+    linkColor.forEach(l => l.addEventListener("click", function () {
+        linkColor.forEach(l => l.classList.remove("active"));
+        this.classList.add("active");
+    }));
+
+    let navValue = document.getElementById('navValue')?.value;
+    if (navValue === '0') {
+        document.querySelectorAll(".custom-padding").forEach(el => el.classList.add("p-0"));
+        document.getElementById('navValue').value = "1";
+    }
+
+    function applySidebarState() {
+        const sidebarHidden = localStorage.getItem("sidebarHidden") === "true";
+        const infoTextHidden = localStorage.getItem("infoTextHidden") === "true";
+
+        sidebar.classList.toggle("showNavBar", !sidebarHidden);
+        toggleButton.classList.toggle("bx-x", !sidebarHidden);
+        bodypd?.classList.toggle("body-pd", !sidebarHidden);
+        headerpd?.classList.toggle("body-pd", !sidebarHidden);
+
+        if (barraLateral) {
+            if (!sidebarHidden) {
+                barraLateral.classList.add(isMobile() ? "p-1" : "p-3");
+                barraLateral.classList.remove(isMobile() ? "p-3" : "p-1");
+            } else {
+                barraLateral.classList.add("p-1");
+                barraLateral.classList.remove("p-3");
+            }
+        }
+
+        nav_name.forEach(el => el.style.opacity = sidebarHidden ? "0" : "1");
+        infoText?.classList.toggle("hidden", infoTextHidden);
+    }
+
+    function updateSidebarState() {
+        const isVisible = sidebar.classList.contains("showNavBar");
+        localStorage.setItem("sidebarHidden", !isVisible);
+        localStorage.setItem("infoTextHidden", !isVisible);
+        infoText?.classList.toggle("hidden", !isVisible);
+
+        fetch(`/jaguarete/Left/Helper?width=${screen.width}&height=${screen.height}`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ sidebarHidden: !isVisible }),
+        }).catch(err => console.error("Error al actualizar estado:", err));
+    }
+
+    toggleButton?.addEventListener("click", () => {
+        sidebar.classList.toggle("showNavBar");
+
+        const isVisible = sidebar.classList.contains("showNavBar");
+
+        toggleButton.classList.toggle("bx-x", isVisible);
+        bodypd?.classList.toggle("body-pd", isVisible);
+        headerpd?.classList.toggle("body-pd", isVisible);
+
+        if (barraLateral) {
+            if (isVisible) {
+                barraLateral.classList.add(isMobile() ? "p-1" : "p-3");
+                barraLateral.classList.remove(isMobile() ? "p-3" : "p-1");
+            } else {
+                barraLateral.classList.add("p-1");
+                barraLateral.classList.remove("p-3");
+            }
+        }
+
+        nav_name.forEach(el => el.style.opacity = isVisible ? "1" : "0");
+
+        updateSidebarState();
+    });
+
+    if (localStorage.getItem("firstVisit") === null) {
+        localStorage.setItem("sidebarHidden", "false");
+        localStorage.setItem("infoTextHidden", "false");
+        localStorage.setItem("firstVisit", "false");
+    }
+
+    applySidebarState();
+});
+
+document.documentElement.classList.remove("sidebar-hidden-inicial");
+document.documentElement.classList.remove("sidebar-visible-inicial");
+
+window.addEventListener("pageshow", () => {
+    const sidebar = document.getElementById("nav-bar");
+    const toggleButton = document.getElementById("header-toggle");
+    const bodypd = document.getElementById("body-pd");
+    const headerpd = document.getElementById("header");
+    const infoText = document.getElementById("info-text");
+    const barraLateral = document.getElementById("barra_lateral");
+    const nav_name = document.querySelectorAll(".nav_name");
+    const isMobile = () => window.innerWidth <= 768;
+
+    const sidebarHidden = localStorage.getItem("sidebarHidden") === "true";
+    const infoTextHidden = localStorage.getItem("infoTextHidden") === "true";
+
+    sidebar.classList.toggle("showNavBar", !sidebarHidden);
+    toggleButton.classList.toggle("bx-x", !sidebarHidden);
+    bodypd?.classList.toggle("body-pd", !sidebarHidden);
+    headerpd?.classList.toggle("body-pd", !sidebarHidden);
+
+    if (barraLateral) {
+        if (!sidebarHidden) {
+            barraLateral.classList.add(isMobile() ? "p-1" : "p-3");
+            barraLateral.classList.remove(isMobile() ? "p-3" : "p-1");
+        } else {
+            barraLateral.classList.add("p-1");
+            barraLateral.classList.remove("p-3");
+        }
+    }
+
+    nav_name.forEach(el => el.style.opacity = sidebarHidden ? "0" : "1");
+    infoText?.classList.toggle("hidden", infoTextHidden);
+});

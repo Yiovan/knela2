@@ -1,0 +1,26 @@
+﻿function aulas(ccurso, cbloque) {
+    fetch(`/jaguarete/Alumno/Cursos/Aulas?ccurso=${ccurso}&cbloque=${cbloque}`, {
+        method: 'GET',
+    }).then((response) => {
+        return response.text();
+    }).then((result) => {
+        console.log("Este es el resultado: ", result);
+
+        
+        semanas.innerHTML = result;
+    });
+
+    let alturas = document.getElementsByClassName('calcular-altura');
+    let mayor = alturas[0].offsetHeight;
+    for (let i = 0; i < alturas.length; i++) {
+        if (alturas[i].offsetHeight > mayor) {
+            mayor = alturas[i].offsetHeight;
+        }
+    }
+    cambiarAltura(mayor, alturas);
+}
+function cambiarAltura(mayor, alturas) {
+    for (let i = 0; i < alturas.length; i++) {
+        alturas[i].style.minHeight = mayor + 'px';
+    }
+}

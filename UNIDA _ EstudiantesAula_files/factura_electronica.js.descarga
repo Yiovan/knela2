@@ -1,0 +1,69 @@
+function descargarFacturaElectronica(ccomprobante) {
+    var requestData = {
+        Comprobante: ccomprobante
+    };
+
+    fetch('./FacturaPDF', {
+        method: 'POST',
+        body: JSON.stringify(requestData),
+        headers: {
+            'Content-Type': 'application/json'
+        }
+    }).then((response) => {
+        if (!response.ok) {
+            return Promise.reject(); // silencioso
+        }
+        return response.json();
+    }).then((data) => {
+        if (!data) {
+            return; // sin throw
+        }
+        var base64Data = data;
+        var binaryString = window.atob(base64Data);
+        var len = binaryString.length;
+        var bytes = new Uint8Array(len);
+        for (var i = 0; i < len; i++) {
+            bytes[i] = binaryString.charCodeAt(i);
+        }
+        var blob = new Blob([bytes], { type: 'application/pdf' });
+        var url = window.URL.createObjectURL(blob);
+        window.open(url);
+    }).catch(() => {
+        // silencioso, sin console.log
+        descargarFacturaNormal(ccomprobante);
+    });
+}
+
+function descargarFacturaNormal(id) {
+    fetch('./Factura?id=' + id, {
+        method: 'POST'
+    }).then((response) => {
+        return response.text();
+    }).then((result) => {
+        html2pdf()
+            .set({
+                margin: 1,
+                filename: 'documento.pdf',
+                image: {
+                    type: 'jpeg',
+                    quality: 0.98
+                },
+                html2canvas: {
+                    scale: 3,
+                    letterRendering: true,
+                },
+                jsPDF: {
+                    unit: "in",
+                    format: "a3",
+                    orientation: 'portrait'
+                }
+            })
+            .from(result)
+            .save()
+            .catch(() => {
+                // sin log
+            });
+    }).catch(() => {
+        // sin log
+    });
+}

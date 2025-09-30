@@ -25,7 +25,7 @@ delete from producto where id='1'
 use master;
 go
 
-CREATE LOGIN [knela] WITH 
+CREATE LOGIN [knelaadmin] WITH 
     PASSWORD=N'knela2025*', 
     DEFAULT_DATABASE=[knela], -- Establece 'knela' como la base de datos por defecto
     CHECK_EXPIRATION=OFF, 
@@ -34,27 +34,14 @@ GO
 
 
 -- 2. Conceder el rol de administrador (sysadmin)
--- ¡Esto da control total sobre el servidor!
-EXEC master..sp_addsrvrolemember @loginame = N'knela', @rolename = N'sysadmin'
+-- ï¿½Esto da control total sobre el servidor!
+EXEC master..sp_addsrvrolemember @loginame = N'knelaadmin', @rolename = N'sysadmin'
 GO
 
 
 
-SELECT @yio;
 
 
 
-CREATE LOGIN [knela] WITH 
-    PASSWORD=N'knela2025*', 
-    DEFAULT_DATABASE=[knela], 
-    CHECK_EXPIRATION=OFF, 
-    CHECK_POLICY=OFF -- OFF es más seguro para pruebas
-GO
-
-
-CREATE LOGIN [knelaadmin] WITH 
-    PASSWORD=N'knela2025*', 
-    DEFAULT_DATABASE=[knela], 
-    CHECK_EXPIRATION=OFF, 
-    CHECK_POLICY=OFF
-GO
+INSERT INTO usuarios (usuario, email, password)
+VALUES ('demo', 'demo@knela.com', 'demo123');
