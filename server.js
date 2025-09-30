@@ -2,10 +2,19 @@ const express = require('express');
 const sql = require('mssql');
 const cors = require('cors');
 const bodyParser = require('body-parser');
+const path = require('path');
 
 const app = express();
 app.use(bodyParser.json({ limit: '50mb' })); 
 app.use(cors());
+
+// Servir archivos estáticos (HTML, CSS, JS, imágenes)
+app.use(express.static(path.join(__dirname)));
+
+// Ruta raíz - Redirigir al login
+app.get('/', (req, res) => {
+    res.sendFile(path.join(__dirname, 'login.html'));
+});
 
 // Configuración SQL Server
 const config = {
@@ -234,4 +243,4 @@ app.delete('/api/productos/:id', async (req, res) => {
 });
 
 // 🔹 INICIO DEL SERVIDOR
-app.listen(3000, () => console.log("Servidor corriendo en http://localhost:3000"));
+app.listen(3000, () => console.log("🚀 Servidor iniciado con éxito en: http://localhost:3000"));

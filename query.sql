@@ -19,9 +19,6 @@ SELECT
 FROM OPENROWSET(BULK 'C:\Users\YIO\Downloads\UNIDA KNELA\KNELA\img\Empanadas.png', SINGLE_BLOB) AS img;
 delete from producto where id='1'
 
-
-
-
 use master;
 go
 
@@ -37,10 +34,6 @@ GO
 -- �Esto da control total sobre el servidor!
 EXEC master..sp_addsrvrolemember @loginame = N'knelaadmin', @rolename = N'sysadmin'
 GO
-
-
-
-
 
 
 INSERT INTO usuarios (usuario, email, password)
