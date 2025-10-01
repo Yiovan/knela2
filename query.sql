@@ -35,6 +35,16 @@ GO
 EXEC master..sp_addsrvrolemember @loginame = N'knelaadmin', @rolename = N'sysadmin'
 GO
 
+CREATE TABLE usuarios (
+    id INT PRIMARY KEY IDENTITY(1,1),
+    usuario VARCHAR(50) NOT NULL UNIQUE,
+    email VARCHAR(100) NOT NULL UNIQUE,
+    password VARCHAR(255) NOT NULL,
+    fecha_registro DATETIME DEFAULT GETDATE(),
+    activo BIT DEFAULT 1
+);
+
+
 
 INSERT INTO usuarios (usuario, email, password)
 VALUES ('demo', 'demo@knela.com', 'demo123');
