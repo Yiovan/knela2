@@ -1,22 +1,332 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <title>Login Moderno</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="cache-control" content="max-age=31536000">
+    <title>UNIDA | Estudiantes</title>
+    
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/css/bootstrap.min.css">
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    
+    <!-- AOS CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/aos@2.3.1/dist/aos.css">
+    
+    <link rel="Shortcut Icon" href="https://jaguarete.unida.edu.py/jaguarete/jaguarete.ico" type="image/x-icon">
 
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Noto+Sans:ital,wght@0,100..900;1,100..900&family=Roboto:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="login.css">
+    <style>
+        /* Estilos personalizados */
+        body {
+            margin: 0;
+            padding: 0;
+            overflow-x: hidden;
+        }
+
+        .custom-blue {
+            background-color: #1e3a8a !important;
+        }
+
+        .nasa-font {
+            font-family: 'Arial Black', sans-serif;
+            font-weight: 900;
+        }
+
+        .fila-login {
+            min-height: 100vh;
+            margin: 0 !important;
+        }
+
+        .izquierda {
+            background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%);
+            padding: 0;
+            position: relative;
+        }
+
+        .contenedor-imagen {
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: calc(100vh - 60px);
+            padding: 2rem;
+        }
+
+        .img-jaguarete {
+            max-width: 500px;
+            width: 100%;
+            height: auto;
+            margin-bottom: 2rem;
+        }
+
+        .texto-encima-centrado {
+            text-align: center;
+            color: white;
+        }
+
+        .titulo-principal {
+            font-size: 3rem;
+            font-weight: bold;
+            margin-bottom: 1rem;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .titulo-segundario {
+            font-size: 1.5rem;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
+        }
+
+        #login-card {
+            border: none;
+            box-shadow: 0 0 30px rgba(0,0,0,0.1);
+            border-radius: 15px;
+            padding: 2rem;
+        }
+
+        .form-control.is-invalid {
+            background-image: none !important;
+        }
+
+        .btn-block.custom-blue {
+            background-color: #1e3a8a;
+            border: none;
+            padding: 12px;
+            font-weight: bold;
+        }
+
+        .btn-block.custom-blue:hover {
+            background-color: #1e40af;
+        }
+
+        @media (max-width: 1200px) {
+            .titulo-principal {
+                font-size: 2rem;
+            }
+            
+            .titulo-segundario {
+                font-size: 1.2rem;
+            }
+            
+            .img-jaguarete {
+                max-width: 300px;
+            }
+
+            #login-card {
+                margin-top: 10% !important;
+            }
+        }
+
+        @media (max-width: 768px) {
+            #responsive-navbar {
+                display: block !important;
+            }
+        }
+    </style>
 </head>
 <body>
-   <div class="login-container">
-  <form action="./home/index.html" method="get">
-    <input type="text" placeholder="Usuario" required>
-    <input type="password" placeholder="Contraseña" required>
-    <button type="submit">Acceder</button>
-  </form>
-</div>
+    <div class="row fila-login w-100 ml-0">
+        <div class="col-xl-9 izquierda">
+            <nav class="navbar navbar-light custom-blue">
+                <a class="navbar-brand" href="#">
+                    <strong class="text-white nasa-font" style="font-size: 36px">UNIDA</strong>
+                </a>
+            </nav>
+            <div class="contenedor-imagen" data-aos="zoom-in">
+                <div class="text-center">
+                    <img src="https://jaguarete.unida.edu.py/jaguarete/Content/images/mascotaunida.png" 
+                         alt="Mascota UNIDA" 
+                         class="text-center img-jaguarete"
+                         onerror="this.src='https://via.placeholder.com/500x400?text=UNIDA'">
+                </div>
+                <div class="texto-encima-centrado">
+                    <h1 class="display-5 text-white titulo-principal">PLATAFORMA JAGUARETÉ</h1>
+                    <p class="text-white titulo-segundario">Nos renovamos pensando en vos</p>
+                </div>
+            </div>
+        </div>
 
+        <div class="col-xl-3">
+            <nav class="navbar navbar-light bg-light" id="responsive-navbar" style="display: none;">
+                <a class="navbar-brand" href="#">
+                    <strong class="text-white nasa-font" style="font-size: 32px">UNIDA</strong>
+                </a>
+            </nav>
+            <div class="card card-body" style="margin-top: 50%;" id="login-card">
+                <h4 class="text-center text-dark">Ingrese a la Plataforma Jaguareté</h4>
+                <form method="post" id="mod_alumno" onsubmit="handleLogin(event)">
+                    <div class="form-group">
+                        <label for="cinstitucion">Filial</label>
+                        <select name="cinstitucion" id="cinstitucion" class="form-control">
+                            <option value="1">Asunción</option>
+                            <option value="2">CDE</option>
+                            <option value="3">Cambyreta</option>
+                        </select>
+                    </div>
+                    <div class="form-group" id="asu">
+                        <label for="cprogramaasu">Programa</label>
+                        <select name="cprogramaasu" id="cprogramaasu" class="form-control">
+                            <option value="5">Presencial</option>
+                            <option value="6">Post-Grado</option>
+                            <option value="7">Cursos de Extensión</option>
+                            <option value="9">Modalidad a Distancia y Semipresencial</option>
+                            <option value="12">Tecnicatura Superior</option>
+                        </select>
+                    </div>
+                    <div class="form-group" id="cde" hidden>
+                        <label for="cprogramacde">Programa</label>
+                        <select name="cprogramacde" id="cprogramacde" class="form-control">
+                            <option value="13">Presencial</option>
+                            <option value="14">Post-Grado</option>
+                            <option value="15">Cursos de Extensión</option>
+                        </select>
+                    </div>
+                    <div class="form-group" id="cambyreta" hidden>
+                        <label for="cprogramacamby">Programa</label>
+                        <select name="cprogramacamby" id="cprogramacamby" class="form-control">
+                            <option value="16">Post-Grado</option>
+                            <option value="17">Modalidad a Distancia y Semipresencial</option>
+                            <option value="18">Cursos de Extensión</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="codigo">Datos</label>
+                        <input name="cingreso" type="text" class="form-control" id="codigo" placeholder="código" required value="" autocomplete="username">
+                    </div>
+                    <div class="form-group position-relative">
+                        <label for="password">Contraseña</label>
+                        <input name="tclave" type="password" class="form-control" id="password" placeholder="Contraseña" required value="" autocomplete="current-password">
+                        <i class="fas fa-eye position-absolute" id="togglePassword" style="top: 70%; right: 10px; transform: translateY(-50%); cursor: pointer;"></i>
+                    </div>
+
+                    <button type="submit" class="btn btn-block custom-blue text-white mt-2" style="border-radius: 25rem;">Ingresar</button>
+
+                    <div class="mt-3 text-center">
+                        <a href="#">¿Has olvidado tu contraseña?</a>
+                    </div>
+                    <input name="__RequestVerificationToken" type="hidden" value="CfDJ8Ns5WxAu-BROlpauznIg04AYTJwheqa8TPvVrYfp9kaes7ScvCFYf5Njtmz2T1Bg6Kn7-wAExfsd0m5jop1kRq2kB646kUI0Shz6v7NuQgJJHl44OueUC9Zu4RCyG_igXBbe__lJL0QEYD6jCGz-Kkw">
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- jQuery -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    
+    <!-- Bootstrap JS Bundle -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- AOS JS -->
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    
+    <script>
+        // Inicializar AOS
+        AOS.init({
+            duration: 800,
+            once: false
+        });
+
+        // Manejar cambio de institución
+        document.addEventListener("DOMContentLoaded", function () {
+            const selectInstitucion = document.getElementById("cinstitucion");
+            const divAsu = document.getElementById("asu");
+            const divCde = document.getElementById("cde");
+            const divCambyreta = document.getElementById("cambyreta");
+
+            selectInstitucion.addEventListener("change", function() {
+                divAsu.hidden = true;
+                divCde.hidden = true;
+                divCambyreta.hidden = true;
+
+                if (this.value === "1") {
+                    divAsu.hidden = false;
+                } else if (this.value === "2") {
+                    divCde.hidden = false;
+                } else if (this.value === "3") {
+                    divCambyreta.hidden = false;
+                }
+            });
+
+            // Toggle password visibility
+            const togglePassword = document.getElementById('togglePassword');
+            const password = document.getElementById('password');
+
+            if (togglePassword && password) {
+                togglePassword.addEventListener('click', function () {
+                    const type = password.type === 'password' ? 'text' : 'password';
+                    password.type = type;
+                    this.classList.toggle('fa-eye-slash');
+                    this.classList.toggle('fa-eye');
+                });
+            }
+        });
+
+        // Función para manejar el login
+        async function handleLogin(event) {
+            event.preventDefault();
+            
+            const usuario = document.getElementById('codigo').value.trim();
+            const password = document.getElementById('password').value;
+            
+            // Caso especial: admin hardcodeado
+            if (usuario === 'admin' && password === 'admin12345') {
+                console.log('🔑 Login admin directo');
+                
+                const adminData = {
+                    id: 0,
+                    nombre: 'Administrador',
+                    email: 'admin@knela.com',
+                    categoria: 'admin'
+                };
+                
+                localStorage.setItem('currentUser', JSON.stringify(adminData));
+                sessionStorage.setItem('usuario', JSON.stringify(adminData));
+                
+                window.location.href = '/admin/admin.html';
+                return;
+            }
+            
+            // Para todos los demás usuarios: verificar en la base de datos
+            try {
+                console.log('🔐 Verificando usuario en base de datos:', usuario);
+                
+                const response = await fetch('http://localhost:3000/api/auth/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ usuario, password })
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    console.log('✅ Login exitoso desde BD');
+                    
+                    const userData = {
+                        id: data.usuario.id,
+                        nombre: data.usuario.usuario,
+                        email: data.usuario.email,
+                        categoria: data.usuario.categoria || 'alumno'
+                    };
+                    
+                    localStorage.setItem('currentUser', JSON.stringify(userData));
+                    sessionStorage.setItem('usuario', JSON.stringify(data.usuario));
+                    
+                    // Redirigir según la categoría
+                    if (userData.categoria === 'admin') {
+                        window.location.href = '/admin/admin.html';
+                    } else {
+                        window.location.href = '/home/UNIDA_EstudiantesAula.html';
+                    }
+                } else {
+                    alert(data.message || 'Usuario o contraseña incorrectos');
+                }
+            } catch (error) {
+                console.error('💥 Error:', error);
+                alert('Error de conexión con el servidor');
+            }
+        }
+    </script>
 </body>
 </html>

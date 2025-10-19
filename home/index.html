@@ -11,220 +11,224 @@
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <header class="topbar">
-        <div class="container">
-            <div class="logo"> </div>
+<header class="topbar">
+    <div class="container">
+        <div class="topbar-left">
+            <img src="/img/logo_knela-removebg-preview.png" alt="logo" class="logo-img">
+            <div class="welcome-text" id="welcomeMessage">Bienvenido</div>
+        </div>
+        
+        <div class="topbar-right">
+            <button class="theme-toggle-btn" onclick="toggleTheme()" title="Cambiar tema">
+                <span class="material-symbols-outlined" id="themeIcon">dark_mode</span>
+            </button>
             <button class="cart-btn" onclick="toggleCart()">
                 <span class="material-symbols-outlined">shopping_cart</span>
                 Carrito (<span id="cartCount">0</span>)
             </button>
         </div>
-    </header>
+    </div>
+</header>
 
-    <!-- Modal del Carrito -->
-    <div id="cartModal" class="cart-modal" onclick="closeCartIfOutside(event)">
-        <div class="cart-modal-content">
-            <div class="cart-modal-header">
-                <h2>🛒 Tu Carrito</h2>
-                <button class="cart-close" onclick="toggleCart()">×</button>
+<!-- Modal del Carrito MEJORADO -->
+<div id="cart-modal" class="cart-modal-overlay hidden" onclick="if (event.target.id === 'cart-modal') toggleCart()">
+    <div class="cart-modal-content" id="cart-content">
+        <!-- Header del Carrito -->
+        <div class="cart-modal-header">
+            <h3 class="cart-modal-title">
+                <span class="material-symbols-outlined">shopping_cart</span>
+                Tu Carrito
+            </h3>
+            <button onclick="toggleCart()" class="cart-modal-close">
+                <span class="material-symbols-outlined">close</span>
+            </button>
+        </div>
+
+        <!-- Items del Carrito -->
+        <div id="cart-items" class="cart-items-container">
+            <!-- Los ítems se cargarán dinámicamente -->
+        </div>
+
+        <!-- Resumen del Carrito -->
+        <div id="cart-summary" class="cart-summary">
+            <div class="cart-summary-row">
+                <span>Total Ítems:</span>
+                <span id="summary-count" class="cart-summary-value">0</span>
             </div>
+            <div class="cart-summary-row cart-summary-total">
+                <span>Total a Pagar:</span>
+                <span id="summary-total" class="cart-total-price">G. 0</span>
+            </div>
+        </div>
+
+        <!-- Botones de Acción -->
+        <div class="cart-actions">
+            <!-- Botón 1: Pagar Pedido Ahora -->
+            <button onclick="processCartOrder(false)" id="cart-checkout-button" class="cart-btn-primary" disabled>
+                <span class="material-symbols-outlined">payments</span>
+                Pagar Pedido Ahora
+            </button>
             
-            <div id="cartItems" class="cart-items">
-                <div class="cart-empty">
-                    <p>Tu carrito está vacío</p>
-                    <p style="font-size: 14px; margin-top: 8px;">¡Agrega productos para comenzar!</p>
-                </div>
-            </div>
-
-            <div class="cart-total">
-                <div class="cart-total-row">
-                    <span>Total Items:</span>
-                    <span id="cartTotalItems">0</span>
-                </div>
-                <div class="cart-total-row final">
-                    <span>Total:</span>
-                    <span id="cartTotalPrice">Gs. 0</span>
-                </div>
-            </div>
-
-            <button class="cart-checkout" onclick="checkout()">
-                Proceder al Pago
+            <!-- Botón 2: Programar Pedido para Mañana -->
+            <button onclick="processCartOrder(true)" id="cart-schedule-button" class="cart-btn-secondary" disabled>
+                <span class="material-symbols-outlined">schedule</span>
+                Programar para Mañana (50% Depósito)
             </button>
         </div>
     </div>
+</div>
 
-    <!-- Sección Hero -->
-    <section class="hero-section">
-        <div class="container">
-            <div class="hero-content">
-                <div class="hero-text">
-                    <h1>Tu comida & deli con sabor <span>artesanal</span></h1>
-                    <p>Ordenalos y paga en el mismo dia o por tarjeta.</p>
-                    <div class="hero-buttons">
-                        <a href="#productos" class="btn-primary">Ver productos</a>
-                        <a href="#ofertas" class="btn-secondary">Ofertas de hoy</a>
-                    </div>
+<!-- Sección Hero -->
+<section class="hero-section">
+    <div class="container">
+        <div class="hero-content">
+            <div class="hero-text">
+                <h1>Tu menu el dia de <span>Hoy</span></h1>
+                <div class="hero-buttons">
+                    <a href="#productos" class="btn-primary">Ver productos</a>
+                    <a href="#ofertas" class="btn-secondary">Ofertas de hoy</a>
                 </div>
-                <div class="hero-image">
-                    <img src="https://images.unsplash.com/photo-1509440159596-0249088772ff?w=600" alt="Mesa con panes y café">
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Contenido Principal -->
+<div class="container">
+    <div class="header-section" id="productos">
+        <div class="header-top">
+            <div class="header-title">
+                <h1>Nuestros Productos</h1>
+                <p>Descubrí nuestra selección de productos artesanales</p>
+            </div>
+        </div>
+
+        <div class="filters">
+            <div class="search-box">
+                <span class="material-symbols-outlined">search</span>
+                <input type="text" id="searchInput" placeholder="Buscar productos..." oninput="filterProducts()">
+            </div>
+            <select id="categoryFilter" onchange="filterProducts()">
+                <option value="">Todas las categorías</option>
+                <option value="dulce">Dulce</option>
+                <option value="salado">Salado</option>
+                <option value="bebida">Bebida</option>
+                <option value="desayuno">Desayuno</option>
+                <option value="almuerzo">Almuerzo</option>
+                <option value="cena">Cena</option>
+            </select>
+        </div>
+    </div>
+
+    <!-- Grid de Categorías -->
+    <section class="categories-grid">
+        <a href="#" class="category-card" onclick="filterByCategory('dulce'); return false;">
+            <div class="category-icon">
+                <span class="material-symbols-outlined">cake</span>
+            </div>
+            <div class="category-name">Dulce</div>
+            <div class="category-count">Ver productos</div>
+        </a>
+        <a href="#" class="category-card" onclick="filterByCategory('salado'); return false;">
+            <div class="category-icon">
+                <span class="material-symbols-outlined">local_pizza</span>
+            </div>
+            <div class="category-name">Salado</div>
+            <div class="category-count">Ver productos</div>
+        </a>
+        <a href="#" class="category-card" onclick="filterByCategory('bebida'); return false;">
+            <div class="category-icon">
+                <span class="material-symbols-outlined">local_cafe</span>
+            </div>
+            <div class="category-name">Bebida</div>
+            <div class="category-count">Ver productos</div>
+        </a>
+        <a href="#" class="category-card" onclick="filterByCategory('desayuno'); return false;">
+            <div class="category-icon">
+                <span class="material-symbols-outlined">coffee</span>
+            </div>
+            <div class="category-name">Desayuno</div>
+            <div class="category-count">Ver productos</div>
+        </a>
+        <a href="#" class="category-card" onclick="filterByCategory('almuerzo'); return false;">
+            <div class="category-icon">
+                <span class="material-symbols-outlined">restaurant</span>
+            </div>
+            <div class="category-name">Almuerzo</div>
+            <div class="category-count">Ver productos</div>
+        </a>
+        <a href="#" class="category-card" onclick="filterByCategory('cena'); return false;">
+            <div class="category-icon">
+                <span class="material-symbols-outlined">dinner_dining</span>
+            </div>
+            <div class="category-name">Cena</div>
+            <div class="category-count">Ver productos</div>
+        </a>
+    </section>
+
+    <!-- Grid de Productos -->
+    <div id="productsContainer" class="products-grid">
+        <!-- Los productos se cargarán dinámicamente -->
+    </div>
+
+    <div id="emptyState" class="empty-state" style="display: none;">
+        <p>No se encontraron productos</p>
+    </div>
+    <div id="paginationContainer"></div>
+    
+    <!-- Sección de Beneficios -->
+    <section class="benefits-section" id="ofertas">
+        <div class="benefits-grid">
+            <div class="benefit">
+                <div class="benefit-icon">
+                    <span class="material-symbols-outlined">schedule</span>
+                </div>
+                <div class="benefit-text">
+                    <h3>Listo en minutos</h3>
+                    <p>Preparación al momento</p>
                 </div>
             </div>
         </div>
     </section>
+</div>
 
-    <!-- Contenido Principal -->
+<!-- Footer -->
+<footer>
     <div class="container">
-        <div class="header-section" id="productos">
-            <div class="header-top">
-                <div class="header-title">
-                    <h1>Nuestros Productos</h1>
-                    <p>Descubrí nuestra selección de productos artesanales</p>
-                </div>
-            </div>
-
-            <div class="filters">
-                <div class="search-box">
-                    <span class="material-symbols-outlined">search</span>
-                    <input type="text" id="searchInput" placeholder="Buscar productos..." oninput="filterProducts()">
-                </div>
-                <select id="categoryFilter" onchange="filterProducts()">
-                    <option value="">Todas las categorías</option>
-                    <option value="dulce">Dulce</option>
-                    <option value="salado">Salado</option>
-                    <option value="bebida">Bebida</option>
-                    <option value="desayuno">Desayuno</option>
-                    <option value="almuerzo">Almuerzo</option>
-                    <option value="cena">Cena</option>
-                </select>
-            </div>
-        </div>
-
-        <!-- Grid de Categorías -->
-        <section class="categories-grid">
-            <a href="#" class="category-card" onclick="filterByCategory('dulce'); return false;">
-                <div class="category-icon">
-                    <span class="material-symbols-outlined">cake</span>
-                </div>
-                <div class="category-name">Dulce</div>
-                <div class="category-count">Ver productos</div>
-            </a>
-            <a href="#" class="category-card" onclick="filterByCategory('salado'); return false;">
-                <div class="category-icon">
-                    <span class="material-symbols-outlined">local_pizza</span>
-                </div>
-                <div class="category-name">Salado</div>
-                <div class="category-count">Ver productos</div>
-            </a>
-            <a href="#" class="category-card" onclick="filterByCategory('bebida'); return false;">
-                <div class="category-icon">
-                    <span class="material-symbols-outlined">local_cafe</span>
-                </div>
-                <div class="category-name">Bebida</div>
-                <div class="category-count">Ver productos</div>
-            </a>
-            <a href="#" class="category-card" onclick="filterByCategory('desayuno'); return false;">
-                <div class="category-icon">
-                    <span class="material-symbols-outlined">coffee</span>
-                </div>
-                <div class="category-name">Desayuno</div>
-                <div class="category-count">Ver productos</div>
-            </a>
-            <a href="#" class="category-card" onclick="filterByCategory('almuerzo'); return false;">
-                <div class="category-icon">
-                    <span class="material-symbols-outlined">restaurant</span>
-                </div>
-                <div class="category-name">Almuerzo</div>
-                <div class="category-count">Ver productos</div>
-            </a>
-            <a href="#" class="category-card" onclick="filterByCategory('cena'); return false;">
-                <div class="category-icon">
-                    <span class="material-symbols-outlined">dinner_dining</span>
-                </div>
-                <div class="category-name">Cena</div>
-                <div class="category-count">Ver productos</div>
-            </a>
-        </section>
-
-        <!-- Grid de Productos -->
-        <div id="productsContainer" class="products-grid">
-            <!-- Los productos se cargarán dinámicamente -->
-        </div>
-
-        <div id="emptyState" class="empty-state" style="display: none;">
-            <p>No se encontraron productos</p>
-        </div>
-
-        <!-- Sección de Beneficios -->
-        <section class="benefits-section" id="ofertas">
-            <div class="benefits-grid">
-                <div class="benefit">
-                    <div class="benefit-icon">
-                        <span class="material-symbols-outlined">schedule</span>
-                    </div>
-                    <div class="benefit-text">
-                        <h3>Listo en minutos</h3>
-                        <p>Preparación al momento</p>
-                    </div>
-                </div>
-                <div class="benefit">
-                    <div class="benefit-icon">
-                        <span class="material-symbols-outlined">credit_card</span>
-                    </div>
-                    <div class="benefit-text">
-                        <h3>Pagá como quieras</h3>
-                        <p>Tarjeta, efectivo o giro</p>
-                    </div>
-                </div>
-                <div class="benefit">
-                    <div class="benefit-icon">
-                        <span class="material-symbols-outlined">verified_user</span>
-                    </div>
-                    <div class="benefit-text">
-                        <h3>Compra segura</h3>
-                        <p>Protección al comprador</p>
-                    </div>
-                </div>
-            </div>
-        </section>
+        <div><b>Knela</b> © 2025 – Sistema de Gestión</div>
     </div>
+</footer>
 
-    <!-- Footer -->
-    <footer>
-        <div class="container">
-            <div><b>Knela</b> © 2025 – Sistema de Gestión</div>
+<!-- Modal de Detalles del Producto -->
+<div id="modalDetails" class="modal-details" onclick="closeDetailsIfOutside(event)">
+    <div class="modal-details-content">
+        <button class="modal-details-close" onclick="closeDetailsModal()">×</button>
+        <img id="modalImage" class="modal-details-image" src="" alt="">
+        <div class="modal-details-header">
+            <h2 id="modalTitle" class="modal-details-title"></h2>
+            <span id="modalCategory" class="modal-details-category"></span>
         </div>
-    </footer>
-
-    <!-- Modal de Detalles del Producto -->
-    <div id="modalDetails" class="modal-details" onclick="closeDetailsIfOutside(event)">
-        <div class="modal-details-content">
-            <button class="modal-details-close" onclick="closeDetailsModal()">×</button>
-            <img id="modalImage" class="modal-details-image" src="" alt="">
-            <div class="modal-details-header">
-                <h2 id="modalTitle" class="modal-details-title"></h2>
-                <span id="modalCategory" class="modal-details-category"></span>
+        <div class="modal-details-info">
+            <div class="modal-details-row">
+                <span class="modal-details-label">Precio</span>
+                <span id="modalPrice" class="modal-details-value modal-details-price"></span>
             </div>
-            <div class="modal-details-info">
-                <div class="modal-details-row">
-                    <span class="modal-details-label">Precio</span>
-                    <span id="modalPrice" class="modal-details-value modal-details-price"></span>
-                </div>
-                <div class="modal-details-row">
-                    <span class="modal-details-label">Stock disponible</span>
-                    <span id="modalStock" class="modal-details-value"></span>
-                </div>
+            <div class="modal-details-row">
+                <span class="modal-details-label">Stock disponible</span>
+                <span id="modalStock" class="modal-details-value"></span>
             </div>
-            <div class="modal-details-actions">
-                <button class="modal-btn modal-btn-secondary" onclick="closeDetailsModal()">Cerrar</button>
-                <button id="modalAddToCart" class="modal-btn modal-btn-primary" onclick="addToCartFromModal()">
-                    Agregar al carrito
-                </button>
-            </div>
+        </div>
+        <div class="modal-details-actions">
+            <button class="modal-btn modal-btn-secondary" onclick="closeDetailsModal()">Cerrar</button>
+            <button id="modalAddToCart" class="modal-btn modal-btn-primary" onclick="addToCartFromModal()">
+                Agregar al carrito
+            </button>
         </div>
     </div>
+</div>
 
-    <script src="script.js"></script>
+<!-- Scripts -->
+<script src="auth.js"></script>
+<script src="script.js"></script>
 </body>
 </html>
-
-

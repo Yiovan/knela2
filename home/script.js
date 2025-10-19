@@ -3,10 +3,23 @@ let allProducts = [];
 let cart = [];
 let currentProductModal = null;
 
+// Variables de paginación
+let currentPage = 1;
+let productsPerPage = 9;
+let filteredProducts = [];
+
 // Aplicar tema según hora del día
 function applyThemeByTime() {
     const hour = new Date().getHours();
     const body = document.body;
+    
+    const userTheme = localStorage.getItem('userTheme');
+    if (userTheme === 'dark') {
+        body.classList.remove('morning-theme', 'afternoon-theme');
+        body.classList.add('night-theme');
+        updateThemeIcon();
+        return;
+    }
     
     body.classList.remove('morning-theme', 'afternoon-theme', 'night-theme');
     
@@ -17,6 +30,34 @@ function applyThemeByTime() {
     } else {
         body.classList.add('night-theme');
     }
+    updateThemeIcon();
+}
+
+// Toggle tema manualmente
+function toggleTheme() {
+    const body = document.body;
+    const currentTheme = localStorage.getItem('userTheme');
+    
+    if (currentTheme === 'dark') {
+        // Cambiar a tema automático (según hora)
+        localStorage.removeItem('userTheme');
+        applyThemeByTime();
+    } else {
+        // Cambiar a tema oscuro
+        localStorage.setItem('userTheme', 'dark');
+        body.classList.remove('morning-theme', 'afternoon-theme');
+        body.classList.add('night-theme');
+        updateThemeIcon();
+    }
+}
+
+// Actualizar icono del tema
+function updateThemeIcon() {
+    const themeIcon = document.getElementById('themeIcon');
+    if (!themeIcon) return;
+    
+    const isDark = document.body.classList.contains('night-theme');
+    themeIcon.textContent = isDark ? 'light_mode' : 'dark_mode';
 }
 
 // Cargar productos desde el servidor
@@ -32,12 +73,39 @@ async function loadProducts() {
         const data = await response.json();
         console.log('Productos recibidos:', data);
         
-        allProducts = data;
-        displayProducts(allProducts);
+        const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
+        const tipoUsuario = currentUser?.tipo || 'alumno';
         
-        if (data.length === 0) {
+        console.log('🔍 Tipo de usuario logueado:', tipoUsuario);
+        
+        const productosFiltrados = data.filter(producto => {
+            const disponiblePara = producto.disponible_para || 'ambos';
+            
+            if (disponiblePara === 'ambos') {
+                return true;
+            }
+            
+            if (disponiblePara === tipoUsuario) {
+                return true;
+            }
+            
+            return false;
+        });
+        
+        console.log(`📦 Total productos: ${data.length} | Filtrados para ${tipoUsuario}: ${productosFiltrados.length}`);
+        
+        allProducts = productosFiltrados;
+        filteredProducts = productosFiltrados;
+        currentPage = 1;
+        displayProducts(filteredProducts);
+        renderPagination();
+        
+        if (productosFiltrados.length === 0) {
             document.getElementById('emptyState').style.display = 'block';
-            document.getElementById('emptyState').innerHTML = '<p>No hay productos disponibles. Ve al panel de administración para agregar productos.</p>';
+            document.getElementById('emptyState').innerHTML = `
+                <p>No hay productos disponibles para tu perfil (${tipoUsuario}).</p>
+                <p style="font-size: 14px; margin-top: 8px;">Contacta con un administrador para más información.</p>
+            `;
         }
     } catch (error) {
         console.error('Error al cargar productos:', error);
@@ -54,19 +122,25 @@ async function loadProducts() {
     }
 }
 
-// Mostrar productos en el grid
+// Mostrar productos en el grid con paginación
 function displayProducts(products) {
     const container = document.getElementById('productsContainer');
     
     if (!products || products.length === 0) {
         document.getElementById('emptyState').style.display = 'block';
         container.innerHTML = '';
+        const paginationContainer = document.getElementById('paginationContainer');
+        if (paginationContainer) paginationContainer.innerHTML = '';
         return;
     }
 
     document.getElementById('emptyState').style.display = 'none';
     
-    container.innerHTML = products.map(product => {
+    const startIndex = (currentPage - 1) * productsPerPage;
+    const endIndex = startIndex + productsPerPage;
+    const productsToShow = products.slice(startIndex, endIndex);
+    
+    container.innerHTML = productsToShow.map(product => {
         const imagenUrl = product.imagen || 'https://via.placeholder.com/280x220?text=Sin+Imagen';
         
         const stockBadge = product.unidades > 0 && product.unidades < 10 
@@ -95,6 +169,10 @@ function displayProducts(products) {
             </article>
         `;
     }).join('');
+    
+    if (currentPage > 1) {
+        container.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
 }
 
 // Filtrar productos
@@ -102,13 +180,15 @@ function filterProducts() {
     const searchValue = document.getElementById('searchInput').value.toLowerCase();
     const categoryValue = document.getElementById('categoryFilter').value;
 
-    const filtered = allProducts.filter(product => {
+    filteredProducts = allProducts.filter(product => {
         const matchesSearch = product.nombre.toLowerCase().includes(searchValue);
         const matchesCategory = !categoryValue || product.categoria === categoryValue;
         return matchesSearch && matchesCategory;
     });
 
-    displayProducts(filtered);
+    currentPage = 1;
+    displayProducts(filteredProducts);
+    renderPagination();
 }
 
 // Filtrar por categoría
@@ -116,6 +196,108 @@ function filterByCategory(category) {
     document.getElementById('categoryFilter').value = category;
     filterProducts();
     document.getElementById('productsContainer').scrollIntoView({ behavior: 'smooth' });
+}
+
+// Renderizar paginación
+function renderPagination() {
+    const totalPages = Math.ceil(filteredProducts.length / productsPerPage);
+    const paginationContainer = document.getElementById('paginationContainer');
+    
+    if (!paginationContainer) return;
+    
+    let paginationHTML = '<div class="pagination-controls">';
+    
+    paginationHTML += `
+        <div class="products-per-page">
+            <label for="perPageSelect">Mostrar:</label>
+            <select id="perPageSelect" onchange="changeProductsPerPage(this.value)">
+                <option value="9" ${productsPerPage === 9 ? 'selected' : ''}>9 productos</option>
+                <option value="12" ${productsPerPage === 12 ? 'selected' : ''}>12 productos</option>
+                <option value="18" ${productsPerPage === 18 ? 'selected' : ''}>18 productos</option>
+                <option value="24" ${productsPerPage === 24 ? 'selected' : ''}>24 productos</option>
+                <option value="50" ${productsPerPage === 50 ? 'selected' : ''}>50 productos</option>
+            </select>
+        </div>
+    `;
+    
+    paginationHTML += '</div>';
+    
+    if (totalPages > 1) {
+        paginationHTML += '<div class="pagination">';
+        
+        paginationHTML += `
+            <button class="pagination-btn" onclick="changePage(${currentPage - 1})" ${currentPage === 1 ? 'disabled' : ''}>
+                <span class="material-symbols-outlined">chevron_left</span>
+            </button>
+        `;
+        
+        const maxVisible = 5;
+        let startPage = Math.max(1, currentPage - Math.floor(maxVisible / 2));
+        let endPage = Math.min(totalPages, startPage + maxVisible - 1);
+        
+        if (endPage - startPage < maxVisible - 1) {
+            startPage = Math.max(1, endPage - maxVisible + 1);
+        }
+        
+        if (startPage > 1) {
+            paginationHTML += `<button class="pagination-btn" onclick="changePage(1)">1</button>`;
+            if (startPage > 2) {
+                paginationHTML += `<span class="pagination-dots">...</span>`;
+            }
+        }
+        
+        for (let i = startPage; i <= endPage; i++) {
+            paginationHTML += `
+                <button class="pagination-btn ${i === currentPage ? 'active' : ''}" onclick="changePage(${i})">
+                    ${i}
+                </button>
+            `;
+        }
+        
+        if (endPage < totalPages) {
+            if (endPage < totalPages - 1) {
+                paginationHTML += `<span class="pagination-dots">...</span>`;
+            }
+            paginationHTML += `<button class="pagination-btn" onclick="changePage(${totalPages})">${totalPages}</button>`;
+        }
+        
+        paginationHTML += `
+            <button class="pagination-btn" onclick="changePage(${currentPage + 1})" ${currentPage === totalPages ? 'disabled' : ''}>
+                <span class="material-symbols-outlined">chevron_right</span>
+            </button>
+        `;
+        
+        paginationHTML += '</div>';
+    }
+    
+    const startItem = (currentPage - 1) * productsPerPage + 1;
+    const endItem = Math.min(currentPage * productsPerPage, filteredProducts.length);
+    paginationHTML += `
+        <div class="pagination-info">
+            Mostrando ${startItem}-${endItem} de ${filteredProducts.length} productos
+        </div>
+    `;
+    
+    paginationContainer.innerHTML = paginationHTML;
+}
+
+// Cambiar de página
+function changePage(page) {
+    const totalPages = Math.ceil(filteredProducts.length / productsPerPage);
+    
+    if (page < 1 || page > totalPages) return;
+    
+    currentPage = page;
+    displayProducts(filteredProducts);
+    renderPagination();
+}
+
+// Cambiar cantidad de productos por página
+function changeProductsPerPage(value) {
+    productsPerPage = parseInt(value);
+    currentPage = 1;
+    displayProducts(filteredProducts);
+    renderPagination();
 }
 
 // Mostrar detalles del producto
@@ -181,10 +363,48 @@ function closeDetailsIfOutside(event) {
     }
 }
 
-function closeCartIfOutside(event) {
-    if (event.target.id === 'cartModal') {
-        toggleCart();
+// ===== FUNCIONES DEL CARRITO ARREGLADAS =====
+
+// Toggle del modal del carrito
+function toggleCart() {
+    const modal = document.getElementById('cart-modal');
+    const content = document.getElementById('cart-content');
+    
+    if (!modal) return;
+    
+    const isHidden = modal.classList.contains('hidden');
+    
+    if (isHidden) {
+        // Abrir modal
+        modal.classList.remove('hidden');
+        modal.classList.add('flex');
+        document.body.style.overflow = 'hidden';
+        
+        // Animación de entrada
+        setTimeout(() => {
+            if (content) {
+                content.style.transform = 'scale(1)';
+                content.style.opacity = '1';
+            }
+        }, 10);
+    } else {
+        // Cerrar modal
+        if (content) {
+            content.style.transform = 'scale(0.95)';
+            content.style.opacity = '0';
+        }
+        
+        setTimeout(() => {
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+            document.body.style.overflow = 'auto';
+        }, 300);
     }
+}
+
+// Función alternativa para cerrar el modal
+function toggleCartModal() {
+    toggleCart();
 }
 
 // Agregar al carrito
@@ -195,7 +415,13 @@ function addToCart(productId) {
     const existingItem = cart.find(item => item.id === productId);
     
     if (existingItem) {
-        existingItem.quantity++;
+        // Verificar que no exceda el stock
+        if (existingItem.quantity < product.unidades) {
+            existingItem.quantity++;
+        } else {
+            showNotification(`Solo hay ${product.unidades} unidades disponibles`);
+            return;
+        }
     } else {
         cart.push({
             ...product,
@@ -209,70 +435,123 @@ function addToCart(productId) {
 
 // Actualizar carrito
 function updateCart() {
-    const cartItemsContainer = document.getElementById('cartItems');
+    const cartItemsContainer = document.getElementById('cart-items');
     const cartCount = document.getElementById('cartCount');
-    const cartTotalItems = document.getElementById('cartTotalItems');
-    const cartTotalPrice = document.getElementById('cartTotalPrice');
+    const summaryCount = document.getElementById('summary-count');
+    const summaryTotal = document.getElementById('summary-total');
+    const checkoutButton = document.getElementById('cart-checkout-button');
+    const scheduleButton = document.getElementById('cart-schedule-button');
     
     const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
     const totalPrice = cart.reduce((sum, item) => sum + (item.precio * item.quantity), 0);
     
-    cartCount.textContent = totalItems;
-    cartTotalItems.textContent = totalItems;
-    cartTotalPrice.textContent = `Gs. ${totalPrice.toLocaleString('es-PY')}`;
+    // Actualizar contadores
+    if (cartCount) cartCount.textContent = totalItems;
+    if (summaryCount) summaryCount.textContent = totalItems;
+    if (summaryTotal) summaryTotal.textContent = `G. ${totalPrice.toLocaleString('es-PY')}`;
     
-    if (cart.length === 0) {
-        cartItemsContainer.innerHTML = `
-            <div class="cart-empty">
-                <p>Tu carrito está vacío</p>
-                <p style="font-size: 14px; margin-top: 8px;">¡Agrega productos para comenzar!</p>
-            </div>
-        `;
-    } else {
-        cartItemsContainer.innerHTML = cart.map((item, index) => `
-            <div class="cart-item">
-                <div class="cart-item-info">
-                    <h4>${item.nombre}</h4>
-                    <p>Gs. ${parseInt(item.precio).toLocaleString('es-PY')} × ${item.quantity}</p>
+    // Habilitar/deshabilitar botones
+    if (checkoutButton) {
+        checkoutButton.disabled = cart.length === 0;
+    }
+    if (scheduleButton) {
+        scheduleButton.disabled = cart.length === 0;
+    }
+    
+    // Mostrar items del carrito
+    if (cartItemsContainer) {
+        if (cart.length === 0) {
+            cartItemsContainer.innerHTML = `
+                <div class="text-center py-12 text-gray-500">
+                    <p class="text-lg font-semibold">Tu carrito está vacío</p>
+                    <p class="text-sm mt-2">¡Agrega productos para comenzar!</p>
                 </div>
-                <button class="cart-item-remove" onclick="removeFromCart(${index})">
-                    Eliminar
-                </button>
-            </div>
-        `).join('');
+            `;
+        } else {
+            cartItemsContainer.innerHTML = cart.map((item, index) => `
+                <div class="flex items-center justify-between bg-gray-50 p-4 rounded-xl">
+                    <div class="flex-1">
+                        <h4 class="font-semibold text-gray-900">${item.nombre}</h4>
+                        <p class="text-sm text-gray-600">G. ${parseInt(item.precio).toLocaleString('es-PY')} × ${item.quantity}</p>
+                        <p class="text-sm font-semibold text-gray-800 mt-1">Subtotal: G. ${(item.precio * item.quantity).toLocaleString('es-PY')}</p>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <button onclick="decreaseQuantity(${index})" class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-1 px-3 rounded-lg transition">
+                            −
+                        </button>
+                        <span class="font-semibold text-gray-900 min-w-[30px] text-center">${item.quantity}</span>
+                        <button onclick="increaseQuantity(${index})" class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-1 px-3 rounded-lg transition">
+                            +
+                        </button>
+                        <button onclick="removeFromCart(${index})" class="ml-2 bg-red-500 hover:bg-red-600 text-white font-bold py-1 px-3 rounded-lg transition">
+                            🗑️
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+        }
+    }
+}
+
+// Aumentar cantidad
+function increaseQuantity(index) {
+    const item = cart[index];
+    const product = allProducts.find(p => p.id === item.id);
+    
+    if (item.quantity < product.unidades) {
+        item.quantity++;
+        updateCart();
+    } else {
+        showNotification(`Solo hay ${product.unidades} unidades disponibles`);
+    }
+}
+
+// Disminuir cantidad
+function decreaseQuantity(index) {
+    const item = cart[index];
+    
+    if (item.quantity > 1) {
+        item.quantity--;
+        updateCart();
+    } else {
+        removeFromCart(index);
     }
 }
 
 // Eliminar del carrito
 function removeFromCart(index) {
+    const removedItem = cart[index];
     cart.splice(index, 1);
     updateCart();
-    showNotification('Producto eliminado del carrito');
+    showNotification(`${removedItem.nombre} eliminado del carrito`);
 }
 
-// Toggle carrito
-function toggleCart() {
-    const modal = document.getElementById('cartModal');
-    const isActive = modal.classList.contains('active');
-    
-    if (isActive) {
-        modal.classList.remove('active');
-        document.body.style.overflow = 'auto';
-    } else {
-        modal.classList.add('active');
-        document.body.style.overflow = 'hidden';
-    }
-}
-
-// Checkout
-function checkout() {
+// Procesar orden del carrito
+function processCartOrder(isScheduled) {
     if (cart.length === 0) {
         alert('Tu carrito está vacío');
         return;
     }
     
     const total = cart.reduce((sum, item) => sum + (item.precio * item.quantity), 0);
-    const message = `¡Gracias por tu compra!\n\nTotal de items: ${cart.reduce((sum, item) => sum + item.quantity, 0)}\nTotal a pagar: Gs. ${total.toLocaleString('es-PY')}\n\nTu pedido será procesado pronto.`;
+    const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
+    
+    let message = '';
+    
+    if (isScheduled) {
+        const deposito = total * 0.5;
+        message = `🗓️ PEDIDO PROGRAMADO PARA MAÑANA\n\n`;
+        message += `Total de items: ${totalItems}\n`;
+        message += `Total: G. ${total.toLocaleString('es-PY')}\n`;
+        message += `Depósito requerido (50%): G. ${deposito.toLocaleString('es-PY')}\n`;
+        message += `Saldo restante: G. ${(total - deposito).toLocaleString('es-PY')}\n\n`;
+        message += `Tu pedido será procesado mañana.`;
+    } else {
+        message = `✅ PAGAR PEDIDO AHORA\n\n`;
+        message += `Total de items: ${totalItems}\n`;
+        message += `Total a pagar: G. ${total.toLocaleString('es-PY')}\n\n`;
+        message += `Tu pedido será procesado pronto.`;
+    }
     
     alert(message);
     cart = [];
@@ -311,7 +590,7 @@ document.addEventListener('keydown', function(e) {
         if (document.getElementById('modalDetails').classList.contains('active')) {
             closeDetailsModal();
         }
-        if (document.getElementById('cartModal').classList.contains('active')) {
+        if (document.getElementById('cart-modal') && !document.getElementById('cart-modal').classList.contains('hidden')) {
             toggleCart();
         }
     }
@@ -323,7 +602,6 @@ window.addEventListener('DOMContentLoaded', () => {
     loadProducts();
     updateCart();
     
-    // Actualizar tema cada hora
     setInterval(applyThemeByTime, 3600000);
 });
 
